@@ -70,7 +70,7 @@ namespace edm {
   // Constructor 
   BMixingModule::BMixingModule(const edm::ParameterSet& pset) :
     bunchSpace_(pset.getParameter<int>("bunchspace")),
-    checktof_(pset.getUntrackedParameter<bool>("checktof",true)),
+    checktof_(pset.getParameter<bool>("checktof")),
     minBunch_((pset.getParameter<int>("minBunch")*25)/pset.getParameter<int>("bunchspace")),
     maxBunch_((pset.getParameter<int>("maxBunch")*25)/pset.getParameter<int>("bunchspace")),
 //     input_(maybeMakePileUp(pset,"input",minBunch_,maxBunch_)),
@@ -90,9 +90,14 @@ namespace edm {
     if (find(names.begin(), names.end(),"playback")
 	!= names.end()) {
       playback_=pset.getUntrackedParameter<bool>("playback");
-      if (playback_) LogInfo("MixingModule") <<" Mixing will be done in playback mode!";
     } else
       playback_=false;
+
+    //We use std::cout in order to make sure the message appears in all possible configurations of the Message Logger
+    if (playback_) {
+      std::cout<<" ATTENTION:Mixing will be done in playback mode!"<<std::endl;
+      std::cout<<" ATTENTION:Mixing Configuration must be the same as for the original mixing!"<<std::endl;
+    }
 
     input_=     maybeMakePileUp(pset,"input",minBunch_,maxBunch_,playback_);
     cosmics_=   maybeMakePileUp(pset,"cosmics",minBunch_,maxBunch_,playback_);
