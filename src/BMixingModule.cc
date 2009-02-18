@@ -70,7 +70,7 @@ namespace edm {
   // Constructor 
   BMixingModule::BMixingModule(const edm::ParameterSet& pset) :
     bunchSpace_(pset.getParameter<int>("bunchspace")),
-    checktof_(pset.getUntrackedParameter<bool>("checktof",true)),
+    checktof_(pset.getParameter<bool>("checktof")),
     minBunch_((pset.getParameter<int>("minBunch")*25)/pset.getParameter<int>("bunchspace")),
     maxBunch_((pset.getParameter<int>("maxBunch")*25)/pset.getParameter<int>("bunchspace")),
 //     input_(maybeMakePileUp(pset,"input",minBunch_,maxBunch_)),
@@ -84,15 +84,20 @@ namespace edm {
     md_.moduleLabel_ = pset.getParameter<std::string>("@module_label");
     //#warning process name is hard coded, for now.  Fix this.
     //#warning the parameter set ID passed should be the one for the full process.  Fix this.
-    md_.processConfiguration_ = ProcessConfiguration("PILEUP", pset.id(), getReleaseVersion(), getPassID());
+    md_.processConfigurationPtr_ = boost::shared_ptr<ProcessConfiguration>(new ProcessConfiguration("PILEUP", pset.id(), getReleaseVersion(), getPassID()));
     // FIXME: temporary to keep bwds compatibility for cfg files
     vector<string> names = pset.getParameterNames();
     if (find(names.begin(), names.end(),"playback")
 	!= names.end()) {
       playback_=pset.getUntrackedParameter<bool>("playback");
-      if (playback_) LogInfo("MixingModule") <<" Mixing will be done in playback mode!";
     } else
       playback_=false;
+
+    //We use std::cout in order to make sure the message appears in all possible configurations of the Message Logger
+    if (playback_) {
+      LogInfo("MixingModule") <<" ATTENTION:Mixing will be done in playback mode! \n"
+                              <<" ATTENTION:Mixing Configuration must be the same as for the original mixing!";
+    }
 
     input_=     maybeMakePileUp(pset,"input",minBunch_,maxBunch_,playback_);
     cosmics_=   maybeMakePileUp(pset,"cosmics",minBunch_,maxBunch_,playback_);
