@@ -59,6 +59,7 @@ namespace edm {
 
   protected:
       void dropUnwantedBranches(std::vector<std::string> const& wantedBranches);
+      virtual void endJob();
       int bunchSpace_;
       static int vertexoffset;
       bool checktof_;
