@@ -77,7 +77,7 @@ namespace edm {
     PU_Study_ = false;
     Study_type_ = "";
 
-    Study_type_ = pset.getUntrackedParameter<std::string>("Special_Pileup_Studies");
+    Study_type_ = pset.getUntrackedParameter<std::string>("Special_Pileup_Studies", "");
 
     if(Study_type_ == "Fixed_ITPU_Vary_OOTPU") {
 
